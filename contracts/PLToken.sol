@@ -77,7 +77,7 @@ contract PLToken is StandardToken {
         // check if transaction sender is admin.
         require (msg.sender == admin1 || msg.sender == admin2);
         // if yes, store his msg.data. 
-        multiSigHashes[msg.sender] = sha3(msg.data);
+        multiSigHashes[msg.sender] = keccak256(msg.data);
         // check if his stored msg.data hash equals to the one of the other admin
         if ((multiSigHashes[admin1]) == (multiSigHashes[admin2])) {
             // if yes, both admins agreed - continue.
