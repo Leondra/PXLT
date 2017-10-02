@@ -112,6 +112,7 @@ contract PLToken is StandardToken {
         uint256 _exchangeRateChangesBlock,
         address _admin1,
         address _admin2)
+    public
     {
         // Check that the parameters make sense
         require(block.number <= _fundingStartBlock); // The start of the fundraising should happen in the future
@@ -136,6 +137,7 @@ contract PLToken is StandardToken {
 
     // Overridden method to check for end of fundraising before allowing transfer of tokens
     function transfer(address _to, uint256 _value)
+    public
     isFinalized // Only allow token transfer after the fundraising has ended
     onlyPayloadSize(2)
     returns (bool success)
@@ -146,6 +148,7 @@ contract PLToken is StandardToken {
 
     // Overridden method to check for end of fundraising before allowing transfer of tokens
     function transferFrom(address _from, address _to, uint256 _value)
+    public
     isFinalized // Only allow token transfer after the fundraising has ended
     onlyPayloadSize(3)
     returns (bool success)

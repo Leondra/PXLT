@@ -11,11 +11,11 @@ contract Token {
     /// @dev Returns the total token supply.
     uint256 public totalSupply;
 
-    function balanceOf(address _owner) constant returns (uint256 balance);
-    function transfer(address _to, uint256 _value) returns (bool success);
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
-    function approve(address _spender, uint256 _value) returns (bool success);
-    function allowance(address _owner, address _spender) constant returns (uint256 remaining);
+    function balanceOf(address _owner) public constant returns (uint256 balance);
+    function transfer(address _to, uint256 _value) public returns (bool success);
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
+    function approve(address _spender, uint256 _value) public returns (bool success);
+    function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
 
     /// @dev MUST trigger when tokens are transferred, including zero value transfers.
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -50,8 +50,8 @@ contract StandardToken is Token {
      * @return True on success, false otherwise.
      */
     function transfer(address _to, uint256 _value)
-    returns (bool success)
-    {
+    public
+    returns (bool success) {
         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
             balances[_to] = SafeMath.add(balances[_to], _value);
@@ -78,8 +78,8 @@ contract StandardToken is Token {
      * @return True on success, false otherwise.
      */
     function transferFrom(address _from, address _to, uint256 _value)
-    returns (bool success)
-    {
+    public
+    returns (bool success) {
         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
             balances[_to] = SafeMath.add(balances[_to], _value);
             balances[_from] = SafeMath.sub(balances[_from], _value);
@@ -97,7 +97,9 @@ contract StandardToken is Token {
      * @param _owner The address of the account to check.
      * @return The account balance.
      */
-    function balanceOf(address _owner) constant returns (uint256 balance) {
+    function balanceOf(address _owner)
+    public constant
+    returns (uint256 balance) {
         return balances[_owner];
     }
 
@@ -117,9 +119,9 @@ contract StandardToken is Token {
      * @return True on success, false otherwise.
      */
     function approve(address _spender, uint256 _value)
+    public
     onlyPayloadSize(2)
-    returns (bool success)
-    {
+    returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -133,10 +135,9 @@ contract StandardToken is Token {
      * @return The allowed withdrawal amount.
      */
     function allowance(address _owner, address _spender)
-    constant
+    public constant
     onlyPayloadSize(2)
-    returns (uint256 remaining)
-    {
+    returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 }
