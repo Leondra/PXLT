@@ -215,7 +215,6 @@ contract PLToken is StandardToken {
         require(netVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
         // Burn Tokens on redemption
-        //if (!super.transfer(0x0, netVal)) throw;
         require(super.transfer(0x0, netVal));
         // Log the redeeming of this tokens
         LogRedeemPLT(msg.sender, netVal, leoAddress);
