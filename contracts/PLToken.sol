@@ -107,6 +107,7 @@ contract PLToken is StandardToken {
         require(_exchangeRateChangesBlock <= _fundingEndBlock); // And the end of the fundraising should happen after the exchange rate change
         require (_admin1 != 0x0); // admin1 address must be set
         require (_admin2 != 0x0); // admin2 address must be set
+        require (_admin1 != _admin2); // Ensure that admin accounts are different
 
         // Contract state
         state = ContractState.Fundraising;
