@@ -164,20 +164,20 @@ contract PLToken is StandardToken {
 
         // First we check the ETH cap, as it's easier to calculate, return
         // the contribution if the cap has been reached already
-        uint256 checkedReceivedEth = safeAdd(totalReceivedEth, msg.value);
+        uint256 checkedReceivedEth = SafeMath.add(totalReceivedEth, msg.value);
         require(checkedReceivedEth <= ETH_RECEIVED_CAP);
 
         // If all is fine with the ETH cap, we continue to check the
         // minimum amount of tokens and the cap for how many tokens
         // have been generated so far
-        uint256 tokens = safeMult(msg.value, getCurrentTokenPrice());
+        uint256 tokens = SafeMath.mul(msg.value, getCurrentTokenPrice());
         require(tokens >= TOKEN_MIN);
-        uint256 checkedSupply = safeAdd(totalSupply, tokens);
+        uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
         require(checkedSupply <= TOKEN_CREATION_CAP);
 
         // Only when all the checks have passed, then we update the state (ethBalances,
         // totalReceivedEth, totalSupply, and balances) of the contract
-        ethBalances[msg.sender] = safeAdd(ethBalances[msg.sender], msg.value);
+        ethBalances[msg.sender] = SafeMath.add(ethBalances[msg.sender], msg.value);
         totalReceivedEth = checkedReceivedEth;
         totalSupply = checkedSupply;
         balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here
@@ -301,7 +301,7 @@ contract PLToken is StandardToken {
         // Update the state only after all the checks have passed
         balances[msg.sender] = 0;
         ethBalances[msg.sender] = 0;
-        totalSupply = safeSubtract(totalSupply, netVal); // Extra safe
+        totalSupply = SafeMath.sub(totalSupply, netVal); // Extra safe
 
         // Log this refund
         LogRefund(msg.sender, ethVal);

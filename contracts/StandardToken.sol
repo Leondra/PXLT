@@ -16,7 +16,7 @@ contract Token {
 }
 
 /*  ERC 20 token */
-contract StandardToken is Token, SafeMath {
+contract StandardToken is Token {
 
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
@@ -30,8 +30,8 @@ contract StandardToken is Token, SafeMath {
     returns (bool success)
     {
         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
-            balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
-            balances[_to] = safeAdd(balances[_to], _value);
+            balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
+            balances[_to] = SafeMath.add(balances[_to], _value);
             Transfer(msg.sender, _to, _value);
             return true;
         } else {
@@ -43,9 +43,9 @@ contract StandardToken is Token, SafeMath {
     returns (bool success)
     {
         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
-            balances[_to] = safeAdd(balances[_to], _value);
-            balances[_from] = safeSubtract(balances[_from], _value);
-            allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender], _value);
+            balances[_to] = SafeMath.add(balances[_to], _value);
+            balances[_from] = SafeMath.sub(balances[_from], _value);
+            allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
             Transfer(_from, _to, _value);
             return true;
         } else {
