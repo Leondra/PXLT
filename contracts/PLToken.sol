@@ -202,7 +202,7 @@ contract PLToken is StandardToken {
 
 
     /// @dev Redeems PLTs and records the LEO address of the sender
-    function redeemTokens(bytes32 leoAddress)
+    function redeemTokens(string leoAddress)
     external
     isRedeeming
     {
