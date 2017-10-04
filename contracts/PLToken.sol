@@ -133,17 +133,6 @@ contract PLToken is StandardToken {
         admin2 = _admin2;
     }
 
-    //Debugging: Method for checking if admins agree on a transaction right now or not.
-    function checkMultisigStatus()
-    constant
-    returns (bool success)
-    {
-    if ((multiSigHashes[admin1]) == (multiSigHashes[admin2])) {
-        return true;
-        } else {
-        return false;
-        }
-    }
 
     // Overridden method to check for end of fundraising before allowing transfer of tokens
     function transfer(address _to, uint256 _value)
