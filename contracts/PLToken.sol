@@ -2,7 +2,11 @@ pragma solidity ^0.4.17;
 
 import "./StandardToken.sol";
 
-/* Taking ideas from BAT token */
+/**
+ * @title The Pre-Leo Token contract.
+ *
+ * Credit: Taking ideas from BAT token and NET token
+ */
 contract PLToken is StandardToken {
 
     // Token metadata
@@ -93,7 +97,15 @@ contract PLToken is StandardToken {
         _;
     }
 
-    // Constructor
+    /**
+     * @dev Create a new PLToken contract.
+     *
+     * @param _fundingStartBlock The starting block of the fundraiser (has to be in the future).
+     * @param _fundingEndBlock The end block of the fundraiser (has to be after _fundingStartBlock).
+     * @param _exchangeRateChangesBlock The block that changes the exchange rate (has to be between _fundingStartBlock and _fundingEndBlock).
+     * @param _admin1 The first admin account that owns this contract.
+     * @param _admin2 The second admin account that owns this contract.
+     */
     function PLToken(
         uint256 _fundingStartBlock,
         uint256 _fundingEndBlock,
@@ -227,6 +239,7 @@ contract PLToken is StandardToken {
         require(_value <= this.balance);
         // make sure a recipient was defined !
         require (_safe != 0x0);
+
         // send the eth to where admins agree upon
         _safe.transfer(_value);
     }
@@ -239,9 +252,11 @@ contract PLToken is StandardToken {
     minimumReached
     onlyOwner  // Only the admins calling this method exactly the same way can finalize the sale.
     {
-        require(block.number > fundingEndBlock || totalSupply >= TOKEN_CREATION_CAP || totalReceivedEth >= ETH_RECEIVED_CAP); // Only allow to finalize the contract before the ending block if we already reached any of the two caps
+        // Only allow to finalize the contract before the ending block if we already reached any of the two caps
+        require(block.number > fundingEndBlock || totalSupply >= TOKEN_CREATION_CAP || totalReceivedEth >= ETH_RECEIVED_CAP);
         // make sure a recipient was defined !
         require (_safe != 0x0);
+
         // Move the contract to Finalized state
         state = ContractState.Finalized;
         savedState = ContractState.Finalized;
