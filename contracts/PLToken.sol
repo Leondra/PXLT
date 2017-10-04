@@ -86,6 +86,10 @@ contract PLToken is StandardToken {
         if ((multiSigHashes[admin1]) == (multiSigHashes[admin2])) {
             // if yes, both admins agreed - continue.
             _;
+
+            // Reset hashes after successful execution
+            multiSigHashes[admin1] = 0x0;
+            multiSigHashes[admin2] = 0x0;
         } else {
             // if not (yet), return.
             return;
