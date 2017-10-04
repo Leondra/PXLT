@@ -13,7 +13,7 @@ contract PLToken is StandardToken {
     string public constant name = "Pre-Leo Token";
     string public constant symbol = "PLT";
     uint256 public constant decimals = 18;
-    string public version = "0.9";
+    string public constant version = "0.9";
 
     // Fundraising parameters
     enum ContractState { Fundraising, Finalized, Redeeming, Paused }
