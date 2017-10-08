@@ -7,11 +7,11 @@ import "./StandardToken.sol";
  *
  * Credit: Taking ideas from BAT token and NET token
  */
-contract PLToken is StandardToken {
+contract PXLToken is StandardToken {
 
     // Token metadata
     string public constant name = "Pre-Leo Token";
-    string public constant symbol = "PLT";
+    string public constant symbol = "PXLT";
     uint256 public constant decimals = 18;
     string public constant version = "0.9";
 
@@ -27,12 +27,12 @@ contract PLToken is StandardToken {
     address public admin1; // First administrator for multi-sig mechanism
     address public admin2; // Second administrator for multi-sig mechanism
 
-    uint256 public constant TOKEN_FIRST_EXCHANGE_RATE = 200; // 200 PLTs per 1 ETH
-    uint256 public constant TOKEN_SECOND_EXCHANGE_RATE = 175; // 175 PLTs per 1 ETH
-    uint256 public constant TOKEN_CREATION_CAP = 10 * (10**6) * 10**decimals; // 10 million PLTs
+    uint256 public constant TOKEN_FIRST_EXCHANGE_RATE = 200; // 200 PXLTs per 1 ETH
+    uint256 public constant TOKEN_SECOND_EXCHANGE_RATE = 175; // 175 PXLTs per 1 ETH
+    uint256 public constant TOKEN_CREATION_CAP = 10 * (10**6) * 10**decimals; // 10 million PXLTs
     uint256 public constant ETH_RECEIVED_CAP = 50 * (10**3) * 10**decimals; // 50 000 ETH
     uint256 public constant ETH_RECEIVED_MIN = 10 * (10**3) * 10**decimals; // 10 000 ETH
-    uint256 public constant TOKEN_MIN = 1 * 10**decimals; // 1 PLT
+    uint256 public constant TOKEN_MIN = 1 * 10**decimals; // 1 PXLT
 
     // We need to keep track of how much ether have been contributed, since we have a cap for ETH too
     uint256 public totalReceivedEth = 0;
@@ -44,8 +44,8 @@ contract PLToken is StandardToken {
 
     // Events used for logging
     event LogRefund(address indexed _to, uint256 _value);
-    event LogCreatePLT(address indexed _to, uint256 _value);
-    event LogRedeemPLT(address indexed _from, uint256 _value, string _leoAddress);
+    event LogCreatePXLT(address indexed _to, uint256 _value);
+    event LogRedeemPXLT(address indexed _from, uint256 _value, string _leoAddress);
 
     modifier isFinalized() {
         require(state == ContractState.Finalized);
@@ -102,7 +102,7 @@ contract PLToken is StandardToken {
     }
 
     /**
-     * @dev Create a new PLToken contract.
+     * @dev Create a new PXLToken contract.
      *
      * @param _fundingStartBlock The starting block of the fundraiser (has to be in the future).
      * @param _fundingEndBlock The end block of the fundraiser (has to be after _fundingStartBlock).
@@ -110,7 +110,7 @@ contract PLToken is StandardToken {
      * @param _admin1 The first admin account that owns this contract.
      * @param _admin2 The second admin account that owns this contract.
      */
-    function PLToken(
+    function PXLToken(
         uint256 _fundingStartBlock,
         uint256 _fundingEndBlock,
         uint256 _exchangeRateChangesBlock,
@@ -161,7 +161,7 @@ contract PLToken is StandardToken {
     }
 
 
-    /// @dev Accepts ether and creates new PLT tokens
+    /// @dev Accepts ether and creates new PXLT tokens
     function createTokens()
     payable
     external
@@ -192,7 +192,7 @@ contract PLToken is StandardToken {
         balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here
 
         // Log the creation of this tokens
-        LogCreatePLT(msg.sender, tokens);
+        LogCreatePXLT(msg.sender, tokens);
     }
 
 
@@ -210,18 +210,18 @@ contract PLToken is StandardToken {
     }
 
 
-    /// @dev Redeems PLTs and records the LEO address of the sender
+    /// @dev Redeems PXLTs and records the LEO address of the sender
     function redeemTokens(string leoAddress)
     external
     isRedeeming
     {
-        uint256 pltVal = balances[msg.sender];
-        require(pltVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
+        uint256 PXLTVal = balances[msg.sender];
+        require(PXLTVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
         // Burn Tokens on redemption
-        require(super.transfer(0x0, pltVal));
+        require(super.transfer(0x0, PXLTVal));
         // Log the redeeming of this tokens
-        LogRedeemPLT(msg.sender, pltVal, leoAddress);
+        LogRedeemPXLT(msg.sender, PXLTVal, leoAddress);
     }
 
 
@@ -304,15 +304,15 @@ contract PLToken is StandardToken {
         require(block.number > fundingEndBlock); // Prevents refund until fundraising period is over
         require(totalReceivedEth < ETH_RECEIVED_MIN);  // No refunds if the minimum has been reached
 
-        uint256 pltVal = balances[msg.sender];
-        require(pltVal > 0);
+        uint256 PXLTVal = balances[msg.sender];
+        require(PXLTVal > 0);
         uint256 ethVal = ethBalances[msg.sender];
         require(ethVal > 0);
 
         // Update the state only after all the checks have passed
         balances[msg.sender] = 0;
         ethBalances[msg.sender] = 0;
-        totalSupply = SafeMath.sub(totalSupply, pltVal); // Extra safe
+        totalSupply = SafeMath.sub(totalSupply, PXLTVal); // Extra safe
 
         // Log this refund
         LogRefund(msg.sender, ethVal);

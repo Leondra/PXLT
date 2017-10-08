@@ -1,0 +1,120 @@
+From 53c1189f2d3029d0c86806ac421c7a348d462d84 Mon Sep 17 00:00:00 2001
+From: Sven Obser <sven.obser@backes-srt.de>
+Date: Mon, 2 Oct 2017 13:17:44 +0200
+Subject: [PATCH 09/13] Fixes Issue #6: No visibility specified
+
+---
+ contracts/PLToken.sol       |  3 +++
+ contracts/StandardToken.sol | 31 ++++++++++++++++---------------
+ 2 files changed, 19 insertions(+), 15 deletions(-)
+
+diff --git a/contracts/PLToken.sol b/contracts/PLToken.sol
+index b25aef6..53dd843 100644
+--- a/contracts/PLToken.sol
++++ b/contracts/PLToken.sol
+@@ -112,6 +112,7 @@ contract PLToken is StandardToken {
+         uint256 _exchangeRateChangesBlock,
+         address _admin1,
+         address _admin2)
++    public
+     {
+         // Check that the parameters make sense
+         require(block.number <= _fundingStartBlock); // The start of the fundraising should happen in the future
+@@ -136,6 +137,7 @@ contract PLToken is StandardToken {
+ 
+     // Overridden method to check for end of fundraising before allowing transfer of tokens
+     function transfer(address _to, uint256 _value)
++    public
+     isFinalized // Only allow token transfer after the fundraising has ended
+     onlyPayloadSize(2)
+     returns (bool success)
+@@ -146,6 +148,7 @@ contract PLToken is StandardToken {
+ 
+     // Overridden method to check for end of fundraising before allowing transfer of tokens
+     function transferFrom(address _from, address _to, uint256 _value)
++    public
+     isFinalized // Only allow token transfer after the fundraising has ended
+     onlyPayloadSize(3)
+     returns (bool success)
+diff --git a/contracts/StandardToken.sol b/contracts/StandardToken.sol
+index 41dddc1..2498489 100644
+--- a/contracts/StandardToken.sol
++++ b/contracts/StandardToken.sol
+@@ -11,11 +11,11 @@ contract Token {
+     /// @dev Returns the total token supply.
+     uint256 public totalSupply;
+ 
+-    function balanceOf(address _owner) constant returns (uint256 balance);
+-    function transfer(address _to, uint256 _value) returns (bool success);
+-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
+-    function approve(address _spender, uint256 _value) returns (bool success);
+-    function allowance(address _owner, address _spender) constant returns (uint256 remaining);
++    function balanceOf(address _owner) public constant returns (uint256 balance);
++    function transfer(address _to, uint256 _value) public returns (bool success);
++    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
++    function approve(address _spender, uint256 _value) public returns (bool success);
++    function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
+ 
+     /// @dev MUST trigger when tokens are transferred, including zero value transfers.
+     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+@@ -50,8 +50,8 @@ contract StandardToken is Token {
+      * @return True on success, false otherwise.
+      */
+     function transfer(address _to, uint256 _value)
+-    returns (bool success)
+-    {
++    public
++    returns (bool success) {
+         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
+             balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
+             balances[_to] = SafeMath.add(balances[_to], _value);
+@@ -78,8 +78,8 @@ contract StandardToken is Token {
+      * @return True on success, false otherwise.
+      */
+     function transferFrom(address _from, address _to, uint256 _value)
+-    returns (bool success)
+-    {
++    public
++    returns (bool success) {
+         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
+             balances[_to] = SafeMath.add(balances[_to], _value);
+             balances[_from] = SafeMath.sub(balances[_from], _value);
+@@ -97,7 +97,9 @@ contract StandardToken is Token {
+      * @param _owner The address of the account to check.
+      * @return The account balance.
+      */
+-    function balanceOf(address _owner) constant returns (uint256 balance) {
++    function balanceOf(address _owner)
++    public constant
++    returns (uint256 balance) {
+         return balances[_owner];
+     }
+ 
+@@ -117,9 +119,9 @@ contract StandardToken is Token {
+      * @return True on success, false otherwise.
+      */
+     function approve(address _spender, uint256 _value)
++    public
+     onlyPayloadSize(2)
+-    returns (bool success)
+-    {
++    returns (bool success) {
+         allowed[msg.sender][_spender] = _value;
+         Approval(msg.sender, _spender, _value);
+         return true;
+@@ -133,10 +135,9 @@ contract StandardToken is Token {
+      * @return The allowed withdrawal amount.
+      */
+     function allowance(address _owner, address _spender)
+-    constant
++    public constant
+     onlyPayloadSize(2)
+-    returns (uint256 remaining)
+-    {
++    returns (uint256 remaining) {
+         return allowed[_owner][_spender];
+     }
+ }
+-- 
+2.7.4.windows.1
+

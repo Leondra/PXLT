@@ -1,0 +1,34 @@
+From b5afff95eb87ac47e60511ed64c13d729720bffe Mon Sep 17 00:00:00 2001
+From: Sven Obser <sven.obser@backes-srt.de>
+Date: Wed, 4 Oct 2017 09:19:38 +0200
+Subject: [PATCH 08/13] Fixes Issue #10: Debugging function checkMultisigStatus
+
+---
+ contracts/PLToken.sol | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/contracts/PLToken.sol b/contracts/PLToken.sol
+index ed5c70d..b25aef6 100644
+--- a/contracts/PLToken.sol
++++ b/contracts/PLToken.sol
+@@ -133,17 +133,6 @@ contract PLToken is StandardToken {
+         admin2 = _admin2;
+     }
+ 
+-    //Debugging: Method for checking if admins agree on a transaction right now or not.
+-    function checkMultisigStatus()
+-    constant
+-    returns (bool success)
+-    {
+-    if ((multiSigHashes[admin1]) == (multiSigHashes[admin2])) {
+-        return true;
+-        } else {
+-        return false;
+-        }
+-    }
+ 
+     // Overridden method to check for end of fundraising before allowing transfer of tokens
+     function transfer(address _to, uint256 _value)
+-- 
+2.7.4.windows.1
+

@@ -1,0 +1,123 @@
+From 9ce5609b19c4662191f33a533cda71018e0b75e9 Mon Sep 17 00:00:00 2001
+From: Sven Obser <sven.obser@backes-srt.de>
+Date: Mon, 2 Oct 2017 11:22:23 +0200
+Subject: [PATCH 02/13] Fixes Issue #8: SafeMath implementation could be moved
+ into a library definition
+
+---
+ contracts/PLToken.sol       | 10 +++++-----
+ contracts/SafeMath.sol      | 10 +++++-----
+ contracts/StandardToken.sol | 12 ++++++------
+ 3 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/contracts/PLToken.sol b/contracts/PLToken.sol
+index f886956..9573a4b 100644
+--- a/contracts/PLToken.sol
++++ b/contracts/PLToken.sol
+@@ -164,20 +164,20 @@ contract PLToken is StandardToken {
+ 
+         // First we check the ETH cap, as it's easier to calculate, return
+         // the contribution if the cap has been reached already
+-        uint256 checkedReceivedEth = safeAdd(totalReceivedEth, msg.value);
++        uint256 checkedReceivedEth = SafeMath.add(totalReceivedEth, msg.value);
+         require(checkedReceivedEth <= ETH_RECEIVED_CAP);
+ 
+         // If all is fine with the ETH cap, we continue to check the
+         // minimum amount of tokens and the cap for how many tokens
+         // have been generated so far
+-        uint256 tokens = safeMult(msg.value, getCurrentTokenPrice());
++        uint256 tokens = SafeMath.mul(msg.value, getCurrentTokenPrice());
+         require(tokens >= TOKEN_MIN);
+-        uint256 checkedSupply = safeAdd(totalSupply, tokens);
++        uint256 checkedSupply = SafeMath.add(totalSupply, tokens);
+         require(checkedSupply <= TOKEN_CREATION_CAP);
+ 
+         // Only when all the checks have passed, then we update the state (ethBalances,
+         // totalReceivedEth, totalSupply, and balances) of the contract
+-        ethBalances[msg.sender] = safeAdd(ethBalances[msg.sender], msg.value);
++        ethBalances[msg.sender] = SafeMath.add(ethBalances[msg.sender], msg.value);
+         totalReceivedEth = checkedReceivedEth;
+         totalSupply = checkedSupply;
+         balances[msg.sender] += tokens;  // safeAdd not needed; bad semantics to use here
+@@ -301,7 +301,7 @@ contract PLToken is StandardToken {
+         // Update the state only after all the checks have passed
+         balances[msg.sender] = 0;
+         ethBalances[msg.sender] = 0;
+-        totalSupply = safeSubtract(totalSupply, netVal); // Extra safe
++        totalSupply = SafeMath.sub(totalSupply, netVal); // Extra safe
+ 
+         // Log this refund
+         LogRefund(msg.sender, ethVal);
+diff --git a/contracts/SafeMath.sol b/contracts/SafeMath.sol
+index acf625d..3a90cfa 100644
+--- a/contracts/SafeMath.sol
++++ b/contracts/SafeMath.sol
+@@ -1,23 +1,23 @@
+ pragma solidity ^0.4.17;
+ 
+ /* taking ideas from FirstBlood token */
+-contract SafeMath {
++library SafeMath {
+ 
+-    function safeAdd(uint256 x, uint256 y) internal returns(uint256) {
++    function add(uint256 x, uint256 y) internal returns(uint256) {
+         uint256 z = x + y;
+         assert((z >= x) && (z >= y));
+         return z;
+     }
+ 
+-    function safeSubtract(uint256 x, uint256 y) internal returns(uint256) {
++    function sub(uint256 x, uint256 y) internal returns(uint256) {
+         assert(x >= y);
+         uint256 z = x - y;
+         return z;
+     }
+ 
+-    function safeMult(uint256 x, uint256 y) internal returns(uint256) {
++    function mul(uint256 x, uint256 y) internal returns(uint256) {
+         uint256 z = x * y;
+-        assert((x == 0)||(z/x == y));
++        assert((x == 0) || (z/x == y));
+         return z;
+     }
+ }
+diff --git a/contracts/StandardToken.sol b/contracts/StandardToken.sol
+index 3963e82..000e36a 100644
+--- a/contracts/StandardToken.sol
++++ b/contracts/StandardToken.sol
+@@ -16,7 +16,7 @@ contract Token {
+ }
+ 
+ /*  ERC 20 token */
+-contract StandardToken is Token, SafeMath {
++contract StandardToken is Token {
+ 
+     mapping (address => uint256) balances;
+     mapping (address => mapping (address => uint256)) allowed;
+@@ -30,8 +30,8 @@ contract StandardToken is Token, SafeMath {
+     returns (bool success)
+     {
+         if (balances[msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
+-            balances[msg.sender] = safeSubtract(balances[msg.sender], _value);
+-            balances[_to] = safeAdd(balances[_to], _value);
++            balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
++            balances[_to] = SafeMath.add(balances[_to], _value);
+             Transfer(msg.sender, _to, _value);
+             return true;
+         } else {
+@@ -43,9 +43,9 @@ contract StandardToken is Token, SafeMath {
+     returns (bool success)
+     {
+         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0 && balances[_to] + _value > balances[_to]) {
+-            balances[_to] = safeAdd(balances[_to], _value);
+-            balances[_from] = safeSubtract(balances[_from], _value);
+-            allowed[_from][msg.sender] = safeSubtract(allowed[_from][msg.sender], _value);
++            balances[_to] = SafeMath.add(balances[_to], _value);
++            balances[_from] = SafeMath.sub(balances[_from], _value);
++            allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _value);
+             Transfer(_from, _to, _value);
+             return true;
+         } else {
+-- 
+2.7.4.windows.1
+

@@ -1,2 +1,2 @@
-# PLToken
-Contracts for PLToken Presale
+# PXLToken
+Contracts for PXLToken Presale

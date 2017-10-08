@@ -1,0 +1,44 @@
+From a30a51e11bb2840648eb148015e6ddcb9c67f6af Mon Sep 17 00:00:00 2001
+From: Sven Obser <sven.obser@backes-srt.de>
+Date: Wed, 4 Oct 2017 09:31:36 +0200
+Subject: [PATCH 07/13] Fixes Issue #7: Function state mutability can be
+ restricted to pure
+
+---
+ contracts/SafeMath.sol | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/contracts/SafeMath.sol b/contracts/SafeMath.sol
+index e26dbf3..4179e50 100644
+--- a/contracts/SafeMath.sol
++++ b/contracts/SafeMath.sol
+@@ -15,7 +15,7 @@ library SafeMath {
+      * @return The result of x+y.
+      */
+     function add(uint256 x, uint256 y)
+-    internal
++    internal pure
+     returns(uint256) {
+         uint256 z = x + y;
+         assert((z >= x) && (z >= y));
+@@ -30,7 +30,7 @@ library SafeMath {
+      * @return The result of x-y.
+      */
+     function sub(uint256 x, uint256 y)
+-    internal
++    internal pure
+     returns(uint256) {
+         assert(x >= y);
+         uint256 z = x - y;
+@@ -45,7 +45,7 @@ library SafeMath {
+      * @return The result of x*y.
+      */
+     function mul(uint256 x, uint256 y)
+-    internal
++    internal pure
+     returns(uint256) {
+         uint256 z = x * y;
+         assert((x == 0) || (z/x == y));
+-- 
+2.7.4.windows.1
+
