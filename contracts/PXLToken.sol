@@ -17,12 +17,20 @@ contract PXLToken is StandardToken {
 
     // Fundraising parameters
     enum ContractState { Fundraising, Finalized, Redeeming, Paused }
+    struct redeemer {                                // pair ETH address with LEO Address)
+        address ethAddress;
+        string leoAddress;
+    }
+    mapping (uint256 => redeemer) public redeemers;  // pair index with user information
+
     ContractState public state;           // Current state of the contract
     ContractState private savedState;     // State of the contract before pause
 
     uint256 public fundingStartBlock;        // These two blocks need to be chosen to comply with the
     uint256 public fundingEndBlock;          // start date and 28 day duration requirements
     uint256 public exchangeRateChangesBlock; // block number that triggers the exchange rate change
+    uint256 public redeemerCount;            // index counting redeemers
+
 
     address public admin1; // First administrator for multi-sig mechanism
     address public admin2; // Second administrator for multi-sig mechanism
@@ -211,17 +219,23 @@ contract PXLToken is StandardToken {
 
 
     /// @dev Redeems PXLTs and records the LEO address of the sender
-    function redeemTokens(string leoAddress)
+    function redeemTokens(string _leoAddress)
     external
     isRedeeming
     {
         uint256 PXLTVal = balances[msg.sender];
         require(PXLTVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
+        redeemers[redeemerCount] = redeemer ({
+            ethAddress : msg.sender,
+            leoAddress : _leoAddress
+        });
+
+        redeemerCount++;
         // Burn Tokens on redemption
         require(super.transfer(0x0, PXLTVal));
         // Log the redeeming of this tokens
-        LogRedeemPXLT(msg.sender, PXLTVal, leoAddress);
+        LogRedeemPXLT(msg.sender, PXLTVal, _leoAddress);
     }
 
 
