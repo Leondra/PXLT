@@ -226,6 +226,9 @@ contract PXLToken is StandardToken {
         uint256 PXLTVal = balances[msg.sender];
         require(PXLTVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
 
+        bytes memory checkLength = bytes(_leoAddress); // Make Sure a leo address is provided
+        require (checkLength > 0);
+
         redeemers[redeemerCount] = redeemer ({
             ethAddress : msg.sender,
             leoAddress : _leoAddress
