@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.15;
 
 import "./StandardToken.sol";
 
@@ -158,6 +158,14 @@ contract PXLToken is StandardToken {
     }
 
 
+    // Allow for easier balance checking
+    function getBalanceOf(address _owner)
+    constant
+    returns (uint256 _balance)
+    {
+        return balances[_owner];
+    }
+
     // Overridden method to check for end of fundraising before allowing transfer of tokens
     function transferFrom(address _from, address _to, uint256 _value)
     public
@@ -224,7 +232,7 @@ contract PXLToken is StandardToken {
     isRedeeming
     {
         uint256 PXLTVal = balances[msg.sender];
-        require(PXLTVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed
+        require(PXLTVal >= TOKEN_MIN); // At least TOKEN_MIN tokens have to be redeemed: 1 whole token
 
         bytes memory checkLength = bytes(_leoAddress); // Make sure a leo address is provided
         require (checkLength.length > 0);

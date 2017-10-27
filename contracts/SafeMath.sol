@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.15;
 
 /**
  * @title Safe math operations that throw error on overflow.
@@ -15,7 +15,7 @@ library SafeMath {
      * @return The result of x+y.
      */
     function add(uint256 x, uint256 y)
-    internal pure
+    internal constant
     returns(uint256) {
         uint256 z = x + y;
         assert((z >= x) && (z >= y));
@@ -30,7 +30,7 @@ library SafeMath {
      * @return The result of x-y.
      */
     function sub(uint256 x, uint256 y)
-    internal pure
+    internal constant
     returns(uint256) {
         assert(x >= y);
         uint256 z = x - y;
@@ -45,7 +45,7 @@ library SafeMath {
      * @return The result of x*y.
      */
     function mul(uint256 x, uint256 y)
-    internal pure
+    internal constant
     returns(uint256) {
         uint256 z = x * y;
         assert((x == 0) || (z/x == y));
